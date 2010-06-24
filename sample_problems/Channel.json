@@ -1,5 +1,6 @@
 {
-  "NEN": 3, 
+  "title": "Heated Channel Flow",
+	"NEN": 3, 
   "functions": {
     "a": "0.000022", 
     "c": "0.000000", 
