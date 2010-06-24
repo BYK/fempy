@@ -56,6 +56,6 @@ def post_process(problem_data, solution):
 	pylab.colorbar(plot, format = "%.3f").set_label("T")
 	pylab.xlabel('X')
 	pylab.ylabel('Y')
-	pylab.title("Contour plot of T values found")
+	pylab.title("Contour plot of T values for {0}".format(problem_data["title"]))
 
 	pylab.show()

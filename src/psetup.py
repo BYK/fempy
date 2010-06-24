@@ -190,8 +190,12 @@ def process_problem_data(problem_data):
 	eOrder = Order[eType][problem_data["NEN"]]
 	problem_data["GQ"] = GQ[eType][problem_data["NGP"]]
 	problem_data["shapefunc"] = Shape[eType][eOrder]
+
 	if not "UV" in problem_data:
 		problem_data["UV"] = None
+
+	if not "title" in problem_data:
+		problem_data["title"] = "Untitled Problem"
 
 	process_functions(problem_data["functions"], problem_data["UV"], problem_data["nodes"])
 
