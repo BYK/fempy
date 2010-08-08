@@ -10,8 +10,8 @@
 @version: 1.5
 '''
 from numpy import linspace
-import matplotlib.pylab as pylab
-import matplotlib.cm as cm
+from matplotlib.pylab import contour, colorbar, contourf, xlabel, ylabel, title, show
+#-- import matplotlib.cm as cm
 from matplotlib.mlab import griddata
 from scipy.sparse import linalg
 from json import dump
@@ -49,13 +49,13 @@ def post_process(problem_data, solution):
 	zi = griddata(x, y, solution, xi, yi)
 
 	#plot the contour lines with black
-	pylab.contour(xi, yi, zi, 15, linewidths = 0.5, colors = 'k')
+	contour(xi, yi, zi, 15, linewidths = 0.5, colors = 'k')
 	#plot the filled contour plot
-	plot = pylab.contourf(xi, yi, zi, 15, antialiased = True)
+	plot = contourf(xi, yi, zi, 15, antialiased = True)
 
-	pylab.colorbar(plot, format = "%.3f").set_label("T")
-	pylab.xlabel('X')
-	pylab.ylabel('Y')
-	pylab.title("Contour plot of T values for {0}".format(problem_data["title"]))
+	colorbar(plot, format = "%.3f").set_label("T")
+	xlabel('X')
+	ylabel('Y')
+	title("Contour plot of T values for {0}".format(problem_data["title"]))
 
-	pylab.show()
+	show()
