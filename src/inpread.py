@@ -174,7 +174,7 @@ if __name__ == "__main__":
 	json_file = open(file_name_parts[0] + '.json', 'w')
 	data = read_input_data(input_file)
 	print "Writing JSON file..."
-	json_dump(data, json_file, indent = 2)
+	json_dump(data, json_file)
 	json_file.close()
 	input_file.close()
 	print "JSON file created successfully."

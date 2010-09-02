@@ -78,10 +78,13 @@ def calc_global(problem_data):
 	instead of defining an extra function for assembly
 	"""
 	print "Calculating global system..."
+
+	print " * Creating matrixes..."
 	NN = problem_data["NN"]
 	K = sparse.lil_matrix((NN, NN))
 	F = zeros((NN, 1))
 
+	print " * Calculating K and F matrixes..."
 	for e_nodes in problem_data["LtoG"]:
 		Ke, Fe = calc_elem(problem_data, e_nodes)
 		for i, node_i in enumerate(e_nodes):
@@ -89,13 +92,19 @@ def calc_global(problem_data):
 			for j, node_j in enumerate(e_nodes):
 				K[node_i, node_j] += Ke[i][j]
 
-	return apply_bc(problem_data, K, F)
+	K, F = apply_bc(problem_data, K, F)
+
+	print " * Converting LIL to CSC format..."
+	return K.asformat("csc"), F
 
 
 def apply_bc(problem_data, K, F):
 	""" 
 	Applies all boundary conditions, according to input
 	"""
+	print " * Applying boundary conditions..."
+
+	print " ** Applying EBCs..."
 	for BC in problem_data["BCs"]["EBC"]:
 		node = BC["node"]
 		data = BC["data"][0]
@@ -103,6 +112,7 @@ def apply_bc(problem_data, K, F):
 		K[node, :] = 0.0
 		K[node, node] = 1.0
 
+	print " ** Applying NBCs..."
 	NEN = problem_data["NEN"]
 	for BC in problem_data["BCs"]["NBC"]:
 		node1 = BC["face"]
@@ -117,6 +127,7 @@ def apply_bc(problem_data, K, F):
 		F[e_nodes[node1]] += SV
 		F[e_nodes[node2]] += SV
 
+	print " ** Applying MBCs..."
 	for BC in problem_data["BCs"]["MBC"]:
 		element = BC["element"]
 		node1 = BC["face"]
@@ -135,4 +146,4 @@ def apply_bc(problem_data, K, F):
 		K[node1, node1] -= (alpha * length) / 3.
 		K[node2, node2] -= (alpha * length) / 6.
 
-	return K.asformat("csc"), F
+	return K, F
