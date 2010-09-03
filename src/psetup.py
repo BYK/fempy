@@ -217,7 +217,7 @@ def read_problem_data():
 		elif os.path.exists(file_name_parts[0] + ".inp"):
 			file_ext = ".inp"
 		else:
-			print "Cannot find valid input file. Expecting an .inp or .json file."
+			print ("Cannot find valid input file. Expecting an .inp or .json file.")
 			exit()
 
 	input_file = open(file_name_parts[0] + file_ext, "r")

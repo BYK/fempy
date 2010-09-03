@@ -18,5 +18,5 @@ if __name__ == "__main__":
 	solution = solve_system(K, F)
 	t = time() - t
 	#print solution
-	print "Total run time: {0} seconds.".format(t)
+	print ("Total run time: {0} seconds.".format(t))
 	post_process(problem_data, solution)

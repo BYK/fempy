@@ -10,6 +10,8 @@ from numpy import array, zeros, linalg, matrix
 from scipy import sparse
 from math import sqrt
 
+global NEN, NEN_range, functions, a, V1, V2, c, f, shape_funcs
+
 def get_element_coords(problem_data, e_nodes):
 	"""
 	Elemental coordinates are needed in both elemental and global system calculations.
@@ -22,8 +24,7 @@ def calc_elem(problem_data, e_nodes):
 	"""
 	Elemental system calculation function to be used in global system calculations.
 	"""
-	NEN = problem_data["NEN"]
-	NEN_range = range(NEN)
+
 
 	#Initializing elemental values
 	Fe = zeros((NEN, 1))
@@ -32,15 +33,6 @@ def calc_elem(problem_data, e_nodes):
 	DKe = [0] * NEN
 	DEe = [0] * NEN
 
-	#Taking coefficient functions of DE out of problem data
-	functions = problem_data["functions"]
-	a = functions["a"]
-	V1 = functions["V1"]
-	V2 = functions["V2"]
-	c = functions["c"]
-	f = functions["f"]
-
-	shape_funcs = problem_data["shapefunc"]
 	e_coord = get_element_coords(problem_data, e_nodes)
 	for GQ_info in problem_data["GQ"]:
 		ksi = GQ_info["coord"][0]
@@ -77,14 +69,31 @@ def calc_global(problem_data):
 	Calculates global stiffness matrix, assembly of elemental systems are included here
 	instead of defining an extra function for assembly
 	"""
-	print "Calculating global system..."
+	print ("Calculating global system...")
+	
+	global NEN, NEN_range, functions, a, V1, V2, c, f, shape_funcs
+	
+	#Defining global variables
+	NEN = problem_data["NEN"]
+	NEN_range = range(NEN)
 
-	print " * Creating matrixes..."
+	#Taking coefficient functions of DE out of problem data
+	functions = problem_data["functions"]
+	a = functions["a"]
+	V1 = functions["V1"]
+	V2 = functions["V2"]
+	c = functions["c"]
+	f = functions["f"]
+	
+	#Defining shape functions
+	shape_funcs = problem_data["shapefunc"]
+
+	print (" * Creating matrixes...")
 	NN = problem_data["NN"]
 	K = sparse.lil_matrix((NN, NN))
 	F = zeros((NN, 1))
 
-	print " * Calculating K and F matrixes..."
+	print (" * Calculating K and F matrixes...")
 	for e_nodes in problem_data["LtoG"]:
 		Ke, Fe = calc_elem(problem_data, e_nodes)
 		for i, node_i in enumerate(e_nodes):
@@ -92,17 +101,17 @@ def calc_global(problem_data):
 			for j, node_j in enumerate(e_nodes):
 				K[node_i, node_j] += Ke[i][j]
 
-	print " * Freeing up memory (1/2)..."
+	print (" * Freeing up memory (1/2)...")
 	del problem_data["GQ"]
 	del problem_data["UV"]
 	del problem_data["functions"]
 
 	K, F = apply_bc(problem_data, K, F)
-	print " * Freeing up memory (2/2)..."
+	print (" * Freeing up memory (2/2)...")
 	del problem_data["LtoG"]
 	del problem_data["BCs"]
 
-	print " * Converting LIL to CSR format..."
+	print (" * Converting LIL to CSR format...")
 	K = K.tocsr()
 	return K, F
 
@@ -111,9 +120,9 @@ def apply_bc(problem_data, K, F):
 	""" 
 	Applies all boundary conditions, according to input
 	"""
-	print " * Applying boundary conditions..."
+	print (" * Applying boundary conditions...")
 
-	print "  * Applying EBCs..."
+	print ("  * Applying EBCs...")
 	for BC in problem_data["BCs"]["EBC"]:
 		node = BC["node"]
 		data = BC["data"][0]
@@ -121,7 +130,7 @@ def apply_bc(problem_data, K, F):
 		K[node, :] = 0.0
 		K[node, node] = 1.0
 
-	print "  * Applying NBCs..."
+	print ("  * Applying NBCs...")
 	NEN = problem_data["NEN"]
 	for BC in problem_data["BCs"]["NBC"]:
 		node1 = BC["face"]
@@ -136,7 +145,7 @@ def apply_bc(problem_data, K, F):
 		F[e_nodes[node1]] += SV
 		F[e_nodes[node2]] += SV
 
-	print "  * Applying MBCs..."
+	print ("  * Applying MBCs...")
 	for BC in problem_data["BCs"]["MBC"]:
 		element = BC["element"]
 		node1 = BC["face"]
