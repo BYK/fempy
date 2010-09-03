@@ -92,10 +92,19 @@ def calc_global(problem_data):
 			for j, node_j in enumerate(e_nodes):
 				K[node_i, node_j] += Ke[i][j]
 
-	K, F = apply_bc(problem_data, K, F)
+	print " * Freeing up memory (1/2)..."
+	del problem_data["GQ"]
+	del problem_data["UV"]
+	del problem_data["functions"]
 
-	print " * Converting LIL to CSC format..."
-	return K.asformat("csc"), F
+	K, F = apply_bc(problem_data, K, F)
+	print " * Freeing up memory (2/2)..."
+	del problem_data["LtoG"]
+	del problem_data["BCs"]
+
+	print " * Converting LIL to CSR format..."
+	K = K.tocsr()
+	return K, F
 
 
 def apply_bc(problem_data, K, F):
@@ -104,7 +113,7 @@ def apply_bc(problem_data, K, F):
 	"""
 	print " * Applying boundary conditions..."
 
-	print " ** Applying EBCs..."
+	print "  * Applying EBCs..."
 	for BC in problem_data["BCs"]["EBC"]:
 		node = BC["node"]
 		data = BC["data"][0]
@@ -112,7 +121,7 @@ def apply_bc(problem_data, K, F):
 		K[node, :] = 0.0
 		K[node, node] = 1.0
 
-	print " ** Applying NBCs..."
+	print "  * Applying NBCs..."
 	NEN = problem_data["NEN"]
 	for BC in problem_data["BCs"]["NBC"]:
 		node1 = BC["face"]
@@ -127,7 +136,7 @@ def apply_bc(problem_data, K, F):
 		F[e_nodes[node1]] += SV
 		F[e_nodes[node2]] += SV
 
-	print " ** Applying MBCs..."
+	print "  * Applying MBCs..."
 	for BC in problem_data["BCs"]["MBC"]:
 		element = BC["element"]
 		node1 = BC["face"]
