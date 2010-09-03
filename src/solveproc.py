@@ -22,7 +22,7 @@ def solve_system(K, F):
 	The spsolve function used here can be replaced with qmr or some other
 	non-linear solver function for non-linear problems such as N-S problems.
 	"""
-	print ("Solving system...")
+	print("Solving system...")
 	return linalg.spsolve(K, F)
 
 def post_process(problem_data, solution):
@@ -30,14 +30,14 @@ def post_process(problem_data, solution):
 	Performs the necessary post processing operations on the "solution"
 	using the problem_data such as contour plotting, SV calculating etc.
 	"""
-	print ("Post processing...")
+	print("Post processing...")
 
-	print (" * Writing output file...")
+	print(" * Writing output file...")
 	output_file = open(problem_data["filename"] + "_output.json", "w")
 	dump({"T": solution.tolist()}, output_file)
 	output_file.close()
 
-	print (" * Preparing for plotting...")
+	print(" * Preparing for plotting...")
 	NN = problem_data["NN"]
 
 	#Extract node coordinates seperately for plotting
@@ -52,7 +52,7 @@ def post_process(problem_data, solution):
 	#approximate the mid values from neighbors
 	zi = griddata(x, y, solution, xi, yi)
 
-	print (" * Plotting...")
+	print(" * Plotting...")
 	#plot the contour lines with black
 	contour(xi, yi, zi, 15, linewidths = 0.5, colors = 'k')
 	#plot the filled contour plot

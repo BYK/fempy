@@ -147,7 +147,7 @@ def read_input_data(file_object):
 	dictionary which contains all the problem information in a structured manner.
 	"file_name" should be a full file name including the file extension.
 	"""
-	print ("Parsing input data...")
+	print("Parsing input data...")
 	data = read_fundamental_variables(file_object)
 	data.update(
 		{
@@ -165,7 +165,7 @@ if __name__ == "__main__":
 	file_name_parts = os_path_splitext(file_name)
 
 	if file_name_parts[1] != '.inp' and file_name_parts[1] != '':
-		print ("There is nothing I can do with this file, sorry.")
+		print("There is nothing I can do with this file, sorry.")
 		exit()
 	elif file_name_parts[1] == '':
 		file_name += '.inp'
@@ -173,8 +173,8 @@ if __name__ == "__main__":
 	input_file = open(file_name, 'r')
 	json_file = open(file_name_parts[0] + '.json', 'w')
 	data = read_input_data(input_file)
-	print ("Writing JSON file...")
+	print("Writing JSON file...")
 	json_dump(data, json_file)
 	json_file.close()
 	input_file.close()
-	print ("JSON file created successfully.")
+	print("JSON file created successfully.")
