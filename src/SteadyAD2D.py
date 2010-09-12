@@ -2,9 +2,9 @@
 @author: BYK, Deli
 @contact: gulen.ilker@hotmail.com, madbyk@gmail.com
 @summary: 
-	A steady 2D advection-diffusion FEM solver in Python 2.6
+	A steady 2D advection-diffusion FEM solver in Python 2.7
 	using NumPy, SciPy and MatPlotLib
-@version: 1.5
+@version: 1.6
 '''
 
 if __name__ == "__main__":
