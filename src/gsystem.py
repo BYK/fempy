@@ -106,7 +106,7 @@ def calc_global(problem_data):
 	del problem_data["UV"]
 	del problem_data["functions"]
 
-	if problem_data["BCs"] != "null":
+	if problem_data["BCs"]:
 		K, F = apply_bc(problem_data, K, F)
 	print (" * Freeing up memory (2/2)...")
 
