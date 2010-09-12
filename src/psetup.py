@@ -202,13 +202,15 @@ def process_problem_data(problem_data):
 	return problem_data
 
 
-def read_problem_data():
+def read_problem_data(input_name = '', output_name = ''):
 	"""
 	Reads the problem data from the user provided file name.
 	The file can either be an .inp file or a .json file.
 	"""
-	file_name = raw_input('Enter input file name: ')
-	file_name_parts = os.path.splitext(file_name)
+	if not input_name:
+		input_name = raw_input('Enter input file name: ')
+
+	file_name_parts = os.path.splitext(input_name)
 	file_ext = file_name_parts[1]
 
 	if file_ext == "":
@@ -226,12 +228,18 @@ def read_problem_data():
 	else:
 		problem_data = read_input_data(input_file)
 	input_file.close()
-	problem_data["filename"] = file_name_parts[0];
+
+	if output_name:
+		problem_data["output"] = output_name
+
+	if ("output" not in problem_data) or (not problem_data["output"]):
+		problem_data["output"] = file_name_parts[0] + "_output.json"
+
 	return problem_data
 
 
-def get_problem_data():
+def get_problem_data(input_name = '', output_name = ''):
 	"""
 	Module function to be called in main module to get the prepared problem data 
 	"""
-	return process_problem_data(read_problem_data())
+	return process_problem_data(read_problem_data(input_name, output_name))

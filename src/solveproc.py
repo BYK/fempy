@@ -33,7 +33,7 @@ def post_process(problem_data, solution):
 	print("Post processing...")
 
 	print(" * Writing output file...")
-	output_file = open(problem_data["filename"] + "_output.json", "w")
+	output_file = open(problem_data["output"], "w")
 	dump({"T": solution.tolist()}, output_file)
 	output_file.close()
 

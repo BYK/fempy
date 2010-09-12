@@ -24,8 +24,6 @@ def calc_elem(problem_data, e_nodes):
 	"""
 	Elemental system calculation function to be used in global system calculations.
 	"""
-
-
 	#Initializing elemental values
 	Fe = zeros((NEN, 1))
 	Ke = zeros((NEN, NEN))
@@ -34,9 +32,11 @@ def calc_elem(problem_data, e_nodes):
 	DEe = [0] * NEN
 
 	e_coord = get_element_coords(problem_data, e_nodes)
+
 	for GQ_info in problem_data["GQ"]:
 		ksi = GQ_info["coord"][0]
 		eta = GQ_info["coord"][1]
+
 		for k, shape_func in enumerate(shape_funcs):
 			Se[k] = shape_func["main"](ksi, eta)
 			DKe[k] = shape_func["dKsi"](ksi, eta)
@@ -70,9 +70,9 @@ def calc_global(problem_data):
 	instead of defining an extra function for assembly
 	"""
 	print("Calculating global system...")
-	
+
 	global NEN, NEN_range, functions, a, V1, V2, c, f, shape_funcs
-	
+
 	#Defining global variables
 	NEN = problem_data["NEN"]
 	NEN_range = range(NEN)
@@ -84,7 +84,7 @@ def calc_global(problem_data):
 	V2 = functions["V2"]
 	c = functions["c"]
 	f = functions["f"]
-	
+
 	#Defining shape functions
 	shape_funcs = problem_data["shapefunc"]
 

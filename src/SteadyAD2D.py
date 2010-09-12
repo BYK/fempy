@@ -8,15 +8,33 @@
 '''
 
 if __name__ == "__main__":
+	import argparse
+
 	from psetup import get_problem_data
 	from gsystem import calc_global
 	from solveproc import post_process, solve_system
 	from time import time
-	problem_data = get_problem_data()
+
+	parser = argparse.ArgumentParser(description = 'Solves steady and 2D advection/diffusion problems using finite elements method.')
+	parser.add_argument('-i', '--input', default = '', help = 'Input file path.')
+	parser.add_argument('-o', '--output', default = '', help = 'Output file path.')
+	arguments = parser.parse_args()
+
+	problem_data = get_problem_data(arguments.input, arguments.output)
+
+	#Exclude input reading time from total time
 	t = time()
+
+	#Calculate the system
 	K, F = calc_global(problem_data)
+
+	#Solve the system
 	solution = solve_system(K, F)
+
+	#Calculate the total running time
 	t = time() - t
-	#printsolution
+
 	print("Total run time: {0} seconds.".format(t))
+
+	#Exclude the post processing time from total time
 	post_process(problem_data, solution)
