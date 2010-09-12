@@ -7,14 +7,8 @@
 	Post process shapes the coordinates and results into a proper form to be plotted,
 	refines the plotting range and approximates mid values using node neighbors
 	and then produces a smooth contour plot.
-@version: 1.5
+@version: 1.6
 '''
-from numpy import linspace
-from matplotlib.pylab import contour, colorbar, contourf, xlabel, ylabel, title, show
-#-- import matplotlib.cm as cm
-from matplotlib.mlab import griddata
-from scipy.sparse import linalg
-from json import dump
 
 def solve_system(K, F):
 	"""
@@ -22,20 +16,23 @@ def solve_system(K, F):
 	The spsolve function used here can be replaced with qmr or some other
 	non-linear solver function for non-linear problems such as N-S problems.
 	"""
+	from scipy.sparse import linalg
+
 	print("Solving system...")
 	return linalg.spsolve(K, F)
 
-def post_process(problem_data, solution):
-	"""
-	Performs the necessary post processing operations on the "solution"
-	using the problem_data such as contour plotting, SV calculating etc.
-	"""
-	print("Post processing...")
+def save_solution(file_name, solution):
+	from json import dump
 
 	print(" * Writing output file...")
-	output_file = open(problem_data["output"], "w")
+	output_file = open(file_name, "w")
 	dump({"T": solution.tolist()}, output_file)
 	output_file.close()
+
+def plot_solution(problem_data, solution):
+	from numpy import linspace
+	from matplotlib.pylab import contour, colorbar, contourf, xlabel, ylabel, title, show
+	from matplotlib.mlab import griddata
 
 	print(" * Preparing for plotting...")
 	NN = problem_data["NN"]
@@ -64,3 +61,16 @@ def post_process(problem_data, solution):
 	title("Contour plot of T values for {0}".format(problem_data["title"]))
 
 	show()
+
+def post_process(problem_data, solution, arguments):
+	"""
+	Performs the necessary post processing operations on the "solution"
+	using the problem_data such as contour plotting, SV calculating etc.
+	"""
+	print("Post processing...")
+
+	if not arguments.dontsave:
+		save_solution(problem_data["output"], solution)
+
+	if not arguments.dontplot:
+		plot_solution(problem_data, solution)

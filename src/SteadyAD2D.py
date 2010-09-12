@@ -18,6 +18,8 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description = 'Solves steady and 2D advection/diffusion problems using finite elements method.')
 	parser.add_argument('-i', '--input', default = '', help = 'Input file path.')
 	parser.add_argument('-o', '--output', default = '', help = 'Output file path.')
+	parser.add_argument('-P', '--dontplot', default = False, action = 'store_true', help = 'Do not create a contour plot of the solution.')
+	parser.add_argument('-S', '--dontsave', default = False, action = 'store_true', help = 'Do not save the solution to a file.')
 	arguments = parser.parse_args()
 
 	problem_data = get_problem_data(arguments.input, arguments.output)
@@ -37,4 +39,4 @@ if __name__ == "__main__":
 	print("Total run time: {0} seconds.".format(t))
 
 	#Exclude the post processing time from total time
-	post_process(problem_data, solution)
+	post_process(problem_data, solution, arguments)
