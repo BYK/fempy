@@ -1,10 +1,11 @@
-'''
+"""
 @author: Deli, BYK
 @contact: gulen.ilker@hotmail.com, madbyk@gmail.com
 @summary:
-    Provides the routines to calculate elemental systems, assembling them and applying boundary conditions.
+    Provides the routines to calculate elemental systems, assembling them and
+    applying boundary conditions.
 @version: 1.1
-'''
+"""
 
 from numpy import array, zeros, linalg, matrix
 from scipy import sparse
@@ -12,19 +13,23 @@ from math import sqrt
 
 global NEN, NEN_range, functions, a, V1, V2, c, f, shape_funcs
 
+
 def get_element_coords(problem_data, e_nodes):
     """
-    Elemental coordinates are needed in both elemental and global system calculations.
+    Calculates elemental coordinates that are needed both in elemental and
+    global system calculations.
     """
     def get_node_coords_(node_no):
         return array(problem_data["nodes"][node_no])
     return array(map(get_node_coords_, e_nodes))
 
+
 def calc_elem(problem_data, e_nodes):
     """
-    Elemental system calculation function to be used in global system calculations.
+    Calculates an elemental system to be used in global system calculations.
     """
-    #Initializing elemental values
+
+    # Initializing elemental values
     Fe = zeros((NEN, 1))
     Ke = zeros((NEN, NEN))
     Se = [0] * NEN
@@ -48,13 +53,13 @@ def calc_elem(problem_data, e_nodes):
         detJ = linalg.det(Jacob)
         gDS = invJacob * DS
 
-        #Global coordinate calculation
+        # Global coordinate calculation
         x, y = 0, 0
         for i, coord in enumerate(e_coord):
             x += Se[i] * coord[0]
             y += Se[i] * coord[1]
 
-        #Main loop for elemental K calculation
+        # Main loop for elemental K calculation
         for i in NEN_range:
             weight = GQ_info["weight"]
             Fe[i] = Fe[i] + Se[i] * f(x, y) * detJ * weight
@@ -66,18 +71,19 @@ def calc_elem(problem_data, e_nodes):
 
 def calc_global(problem_data):
     """
-    Calculates global stiffness matrix, assembly of elemental systems are included here
-    instead of defining an extra function for assembly
+    Calculates global stiffness matrix. Assembly of elemental systems are
+    included here instead of defining an extra function for assembly.
     """
+
     print("Calculating global system...")
 
     global NEN, NEN_range, functions, a, V1, V2, c, f, shape_funcs
 
-    #Defining global variables
+    # Defining global variables
     NEN = problem_data["NEN"]
     NEN_range = range(NEN)
 
-    #Taking coefficient functions of DE out of problem data
+    # Taking coefficient functions of DE out of problem data
     functions = problem_data["functions"]
     a = functions["a"]
     V1 = functions["V1"]
@@ -85,7 +91,7 @@ def calc_global(problem_data):
     c = functions["c"]
     f = functions["f"]
 
-    #Defining shape functions
+    # Defining shape functions
     shape_funcs = problem_data["shapefunc"]
 
     print(" * Creating matrixes...")

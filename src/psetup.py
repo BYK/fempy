@@ -1,12 +1,13 @@
-'''
+"""
 @author: Deli, BYK
 @contact: gulen.ilker@hotmail.com, madbyk@gmail.com
 @summary:
-    Provides the routines to read and process problem data to be used in the calculation of the global system.
-    Also includes Gauss Quadrature and shape function definitions. Calling get_problem_data() from an external
-    module is enough the get the problem data easily.
+    Provides the routines to read and process problem data to be used in the
+    calculation of the global system. Also includes Gauss Quadrature and shape
+    function definitions. Calling get_problem_data() from an external module is
+    enough the get the problem data easily.
 @version: 1.2
-'''
+"""
 
 from math import sqrt
 from json import load as json_load
@@ -17,11 +18,12 @@ GQ = {
     # Definition of Gauss Quadrature Points
     # Format for use: GQ[eType][NGP]["coords" or "weight"]
     #----------------------------------------------------
+
     "quad":
     {
         1:
         [
-            {"coord": (0., 0.), 	"weight": 4.}
+            {"coord": (0., 0.), "weight": 4.}
         ],
         4:
         [
@@ -95,10 +97,11 @@ GQ = {
 }
 
 Shape = {
-    #=============================================================================
+    #==========================================================================
     # Definition of Shape functions and their derivatives
-    # Format for use: Shape[eType]["linear" or "quadratic"][main/dKsi/dEta](ksi, eta)
-    #=============================================================================
+    # Format: Shape[eType]["linear" or "quadratic"][main/dKsi/dEta](ksi, eta)
+    #==========================================================================
+
     "tri":
     {
         "linear":
@@ -149,31 +152,38 @@ Order = {
 
 def process_functions(functions, UV_data, nodes):
     """
-    Processes coefficient functions of the DE/problem to create directly callable functions from Python.
+    Processes coefficient functions of the DE/problem to create directly
+    callable functions from Python.
     """
+
     default_lambda = "lambda x,y:"
-    globals = None
+    global_vars = None
     for name in functions:
         if functions[name] == '?':
             functions[name] = '0'
         elif functions[name] == "x" or functions[name] == "y":
             #If it is indicated that the provided U & V values to be used
-            if not globals:
+            if not global_vars:
                 x, y = [0] * nodes.__len__(), [0] * nodes.__len__()
                 for i, node in enumerate(nodes):
                     x[i] = node[0]
                     y[i] = node[1]
 
                 from scipy.interpolate import bisplrep, bisplev
-                #Fit a bivariate B-spline to U and V values t ocalculate values that are not on the nodes
-                #This "globals" dictionary is provided to eval for the lambda's to work properly
-                globals = {
+                # Fit a bivariate B-spline to U and V values to calculate
+                # values that are not on the nodes  This "global_vars"
+                # dictionary is provided to eval for the lambda's to work
+                # properly
+                global_vars = {
                     "x_tck": bisplrep(x, y, UV_data[0]),
                     "y_tck": bisplrep(x, y, UV_data[1]),
                     "bisplev": bisplev
                 }
 
-            functions[name] = eval("lambda x,y: bisplev(x, y, {0}_tck)".format(functions[name]), globals)
+            functions[name] = eval(
+                "lambda x,y: bisplev(x, y, {0}_tck)".format(functions[name]),
+                global_vars
+            )
             continue
 
         functions[name] = default_lambda + functions[name]
@@ -183,9 +193,11 @@ def process_functions(functions, UV_data, nodes):
 
 def process_problem_data(problem_data):
     """
-    Takes the raw problem data then converts the string functions into usable functions with process_functions,
-    determines necessary shape funcstions and embeds them to problem_data with necessary GQ info.
+    Takes the raw problem data then converts the string functions into usable
+    functions with process_functions, determines necessary shape funcstions and
+    embeds them to problem_data with necessary GQ info.
     """
+
     eType = problem_data["eType"]
     eOrder = Order[eType][problem_data["NEN"]]
     problem_data["GQ"] = GQ[eType][problem_data["NGP"]]
@@ -197,16 +209,21 @@ def process_problem_data(problem_data):
     if not "title" in problem_data:
         problem_data["title"] = "Untitled Problem"
 
-    process_functions(problem_data["functions"], problem_data["UV"], problem_data["nodes"])
+    process_functions(
+        problem_data["functions"],
+        problem_data["UV"],
+        problem_data["nodes"]
+    )
 
     return problem_data
 
 
-def read_problem_data(input_name = '', output_name = ''):
+def read_problem_data(input_name='', output_name=''):
     """
     Reads the problem data from the user provided file name.
     The file can either be an .inp file or a .json file.
     """
+
     if not input_name:
         input_name = raw_input('Enter input file name: ')
 
@@ -232,7 +249,4 @@ def read_problem_data(input_name = '', output_name = ''):
 
 
 def get_problem_data(input_name='', output_name=''):
-    """
-    Module function to be called in main module to get the prepared problem data
-    """
     return process_problem_data(read_problem_data(input_name, output_name))

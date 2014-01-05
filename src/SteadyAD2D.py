@@ -1,11 +1,11 @@
-'''
+"""
 @author: BYK, Deli
 @contact: gulen.ilker@hotmail.com, madbyk@gmail.com
 @summary: 
     A steady 2D advection-diffusion FEM solver in Python 2.7
     using NumPy, SciPy and MatPlotLib
 @version: 1.6
-'''
+"""
 
 if __name__ == "__main__":
     import argparse
@@ -15,28 +15,33 @@ if __name__ == "__main__":
     from solveproc import post_process, solve_system
     from time import time
 
-    parser = argparse.ArgumentParser(description = 'Solves steady and 2D advection/diffusion problems using finite elements method.')
-    parser.add_argument('-i', '--input', default = '', help = 'Input file path.')
-    parser.add_argument('-o', '--output', default = '', help = 'Output file path.')
-    parser.add_argument('-P', '--dontplot', default = False, action = 'store_true', help = 'Do not create a contour plot of the solution.')
-    parser.add_argument('-S', '--dontsave', default = False, action = 'store_true', help = 'Do not save the solution to a file.')
+    parser = argparse.ArgumentParser(
+        description='Solves steady and 2D advection/diffusion problems using '
+                    'finite elements method.'
+    )
+    parser.add_argument('-i', '--input', default='', help='Input file path.')
+    parser.add_argument('-o', '--output', default='', help='Output file path.')
+    parser.add_argument('-P', '--dontplot', default=False, action='store_true',
+                        help='Do not create a contour plot of the solution.')
+    parser.add_argument('-S', '--dontsave', default=False, action='store_true',
+                        help='Do not save the solution to a file.')
     arguments = parser.parse_args()
 
     problem_data = get_problem_data(arguments.input, arguments.output)
 
-    #Exclude input reading time from total time
+    # Exclude input reading time from total time
     t = time()
 
-    #Calculate the system
+    # Calculate the system
     K, F = calc_global(problem_data)
 
-    #Solve the system
+    # Solve the system
     solution = solve_system(K, F)
 
-    #Calculate the total running time
+    # Calculate the total running time
     t = time() - t
 
     print("Total run time: {0} seconds.".format(t))
 
-    #Exclude the post processing time from total time
+    # Exclude the post processing time from total time
     post_process(problem_data, solution, arguments)
