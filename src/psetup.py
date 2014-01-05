@@ -9,7 +9,6 @@
 '''
 
 from math import sqrt
-from inpread import read_input_data
 from json import load as json_load
 import os
 
@@ -181,6 +180,7 @@ def process_functions(functions, UV_data, nodes):
         functions[name] = eval(functions[name])
     return functions
 
+
 def process_problem_data(problem_data):
     """
     Takes the raw problem data then converts the string functions into usable functions with process_functions,
@@ -210,35 +210,28 @@ def read_problem_data(input_name = '', output_name = ''):
     if not input_name:
         input_name = raw_input('Enter input file name: ')
 
-    file_name_parts = os.path.splitext(input_name)
-    file_ext = file_name_parts[1]
+    file_name, file_ext = os.path.splitext(input_name)
 
     if file_ext == "":
-        if os.path.exists(file_name_parts[0] + ".json"):
+        if os.path.exists(file_name + ".json"):
             file_ext = ".json"
-        elif os.path.exists(file_name_parts[0] + ".inp"):
-            file_ext = ".inp"
         else:
-            print("Cannot find valid input file. Expecting an .inp or .json file.")
-            exit()
+            print("Cannot find valid input file. Expecting a .json file.")
+            exit(127)
 
-    input_file = open(file_name_parts[0] + file_ext, "r")
-    if file_ext == ".json":
+    with open(file_name + file_ext, "r") as input_file:
         problem_data = json_load(input_file)
-    else:
-        problem_data = read_input_data(input_file)
-    input_file.close()
 
     if output_name:
         problem_data["output"] = output_name
 
     if ("output" not in problem_data) or (not problem_data["output"]):
-        problem_data["output"] = file_name_parts[0] + "_output.json"
+        problem_data["output"] = file_name + "_output.json"
 
     return problem_data
 
 
-def get_problem_data(input_name = '', output_name = ''):
+def get_problem_data(input_name='', output_name=''):
     """
     Module function to be called in main module to get the prepared problem data
     """
