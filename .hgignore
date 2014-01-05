@@ -1,9 +1,0 @@
-
-syntax: regexp
-^profile_results$
-syntax: regexp
-^results$
-syntax: regexp
-\.project
-syntax: regexp
-\.pydevproject
